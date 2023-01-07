@@ -29,7 +29,7 @@ def findTranslation(register, inLanguageS, toLanguageS, termInArgS):
     global testUhuList
     global testCheckID
 
-    with open(realPath + '/links.csv') as links:
+    with open(f'{realPath}/links.csv') as links:
         linksList = csv.reader(links, delimiter='\t')
 
         for line in linksList:
@@ -38,15 +38,13 @@ def findTranslation(register, inLanguageS, toLanguageS, termInArgS):
                 checkTranslation(
                     testCheckID, inLanguageS, toLanguageS, termInArgS)
                 continue
-            else:
-                pass
 
 
 def checkTranslation(possibleID, inLanguageS, toLanguageS, termInArgS):
     global sentences
     global translationsList
 
-    with open(realPath + '/sentences.csv') as sentencesListing:
+    with open(f'{realPath}/sentences.csv') as sentencesListing:
         sentencesList = csv.reader(sentencesListing, delimiter='\t')
         for row in sentencesList:
             if row[0] == possibleID and toLanguageS == row[1]:
@@ -54,12 +52,10 @@ def checkTranslation(possibleID, inLanguageS, toLanguageS, termInArgS):
                 print(sentences[-1])
                 print(translationsList[-1], '\n\n')
                 continue
-            else:
-                pass
 
 
 def findTermTranslatedtoLang(inLanguageS, toLanguageS, termInArgS):
-    with open(realPath + '/sentences.csv') as sentencesListing:
+    with open(f'{realPath}/sentences.csv') as sentencesListing:
         sentencesList = csv.reader(sentencesListing, delimiter='\t')
         global sentences
         global translationsList
@@ -68,25 +64,18 @@ def findTermTranslatedtoLang(inLanguageS, toLanguageS, termInArgS):
             if row[1] == inLanguageS and termInArgS in row[2]:
                 sentences.append(row)
                 findTranslation(row[0], inLanguageS, toLanguageS, termInArgS)
-
-            elif row[1] != inLanguageS or termInArgS not in row[2]:
-                pass
 # Define argument function
 
 
 def browserWrapper(fromLanguage, toLanguage, term):
-    # Open tatoeba.org in a new tab browser performing a search
-
-    # ArgB variables
-    fromReference = '&from='
     toReference = '&to='
 
     # Join everything to perform the search
-    search = term + fromReference + fromLanguage + toReference + toLanguage
+    search = f'{term}&from={fromLanguage}{toReference}{toLanguage}'
 
     # Open the browser
     webbrowser.open(
-        'https://tatoeba.org/eng/sentences/search?query=' + search, new=2
+        f'https://tatoeba.org/eng/sentences/search?query={search}', new=2
     )
 
 
@@ -101,8 +90,6 @@ def downloadWrapper(downloadFile):
             res.raise_for_status()
             if not res.ok:
                 print('Download failed.')
-                pass
-
             for block in res.iter_content(1024):
                 theFile.write(block)
 
@@ -115,7 +102,7 @@ def downloadWrapper(downloadFile):
         untarFile.close()
         print('File uncompressed and ready to use.\n')
 
-    if downloadFile == 'sentences' or downloadFile == 'links':
+    if downloadFile in ['sentences', 'links']:
         pass
     elif downloadFile != 'sentences' or downloadFile != 'links':
         print(
@@ -138,7 +125,7 @@ def downloadWrapper(downloadFile):
 
     askForDownload = input('> ')
 
-    if askForDownload.lower() == 'yes' or askForDownload.lower() == 'y':
+    if askForDownload.lower() in ['yes', 'y']:
         downloadTool()
         uncompressTool()
 
@@ -155,9 +142,7 @@ def idWrapper(sentenceId):
     Open Tatoeba.org in a new tab searching by sentence's ID, just in case.
     Use it to get more information about the sentence.
     """
-    webbrowser.open(
-        'https://tatoeba.org/eng/sentences/show/' + sentenceId, new=2
-    )
+    webbrowser.open(f'https://tatoeba.org/eng/sentences/show/{sentenceId}', new=2)
 
 
 def findWrapper(inLanguageF, termInArgF):
@@ -166,7 +151,7 @@ def findWrapper(inLanguageF, termInArgF):
     # a term in an language
 
     # findWrapper variables
-    with open(realPath + '/sentences.csv') as listFile:
+    with open(f'{realPath}/sentences.csv') as listFile:
         readList = csv.reader(listFile, delimiter='\t')
 
         # function responsible for making the search AND looping the matches
@@ -184,7 +169,7 @@ def findWrapper(inLanguageF, termInArgF):
 
 
 def listAbbreviationWrapper(searchPattern):
-    with open(realPath + '/abbreviationList.csv') as abbreviationList:
+    with open(f'{realPath}/abbreviationList.csv') as abbreviationList:
         abbList = csv.reader(abbreviationList, delimiter='\t')
         abbreviation = [row for row in abbList if searchPattern in row]
         print(abbreviation)
@@ -192,8 +177,7 @@ def listAbbreviationWrapper(searchPattern):
 
 # Fetching
 def requestGet(search):
-    res = requests.get(search)
-    return(res)
+    return requests.get(search)
 
 
 def requestPaginationInput(value):
@@ -208,8 +192,7 @@ def requestPaginationInput(value):
 
 def requestPagination(search):
     res = requestGet(search)
-    toPrint = requestPrint(res)
-    return(toPrint)
+    return requestPrint(res)
 
 
 def requestPrint(value):
@@ -257,8 +240,7 @@ def requestWrapper(fromLanguage, toLanguage, term):
         elif nextPage == "y":
             search = urlBase + pagination
             pagination = requestPagination(search)
-    else:
-        return
+    return
 
 
 def searchWrapper(inLanguageS, toLanguageS, termInArgS):
